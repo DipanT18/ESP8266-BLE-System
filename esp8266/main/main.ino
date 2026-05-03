@@ -35,8 +35,8 @@
 // Consider a WiFi provisioning captive portal for production deployments.
 // ---------------------------------------------------------------------------
 
-#define WIFI_SSID       "YOUR_SSID"
-#define WIFI_PASSWORD   "YOUR_PASSWORD"
+#define WIFI_SSID       "BLE_Attendance"
+#define WIFI_PASSWORD   "attend123"
 
 #define AP_SSID         "AttendAP"
 #define AP_PASSWORD     "attend123"   // min 8 chars; leave "" for open network
