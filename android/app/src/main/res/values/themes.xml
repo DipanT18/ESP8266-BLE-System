@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.BLEAttendance" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">#2b6cb0</item>
+        <item name="colorPrimaryVariant">#1a4a8c</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+    </style>
+</resources>
