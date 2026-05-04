@@ -17,7 +17,7 @@ static EventCallback  s_callback;
 // Static allocation avoids dynamic memory; dedup window set in begin()
 static Dedup::Deduplicator s_dedupInstance(DEDUP_WINDOW_S);
 static Dedup::Deduplicator* s_dedup = &s_dedupInstance;
-static bool           s_scanning = false;
+static bool           s_scanEnabled = false;
 static NimBLEScan*    s_scan = nullptr;
 
 static NimBLEScan* getScan() {
@@ -105,16 +105,16 @@ static void onScanComplete(const NimBLEScanResults& results) {
     if (!scan) return;
     scan->clearResults();
 
-    if (!s_scanning) return;
+    if (!s_scanEnabled) return;
 
     if (BLE_SCAN_DURATION_S == 0) {
-        s_scanning = false;
+        s_scanEnabled = false;
         return;
     }
 
     bool ok = scan->start(BLE_SCAN_DURATION_S, onScanComplete, /*restart=*/false);
     if (!ok) {
-        s_scanning = false;
+        s_scanEnabled = false;
         Serial.println("[BLE] Scan auto-restart FAILED");
     }
 }
@@ -146,15 +146,18 @@ void startScan() {
         ok = scan->start(BLE_SCAN_DURATION_S, onScanComplete, /*restart=*/false);
     }
 
-    s_scanning = ok;
+    s_scanEnabled = ok;
     Serial.printf("[BLE] Scan %s (duration %d s)\n",
                   ok ? "started" : "FAILED", BLE_SCAN_DURATION_S);
 }
 
 void stopScan() {
-    s_scanning = false;
     NimBLEScan* scan = getScan();
-    if (!scan) return;
+    if (!scan) {
+        s_scanEnabled = false;
+        return;
+    }
+    s_scanEnabled = false;
     scan->stop();
     scan->clearResults();
     Serial.println("[BLE] Scan stopped");
