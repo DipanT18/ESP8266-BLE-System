@@ -294,10 +294,12 @@ void registerRoutes(AsyncWebServer& server) {
     registerBodyRoute(server, "/api/session/start", HTTP_POST, handleStartSession);
     registerBodyRoute(server, "/api/session/stop",  HTTP_POST, handleStopSession);
 
-    // Students
+    // Students – register more-specific paths before their prefix so that
+    // ESPAsyncWebServer's prefix-match logic doesn't route /import to the
+    // wrong handler.
+    registerBodyRoute(server, "/api/students/import", HTTP_POST, handleImportStudents);
     registerBodyRoute(server, "/api/students",        HTTP_POST, handleRegisterStudent);
     server.on("/api/students",        HTTP_GET,  handleGetStudents);
-    registerBodyRoute(server, "/api/students/import", HTTP_POST, handleImportStudents);
     server.on("^/api/students/([0-9]+)$", HTTP_DELETE,
               [](AsyncWebServerRequest* req) {
                   if (!checkAuth(req)) { replyError(req, 401, "Unauthorized"); return; }
@@ -310,9 +312,9 @@ void registerRoutes(AsyncWebServer& server) {
                   }
               });
 
-    // Attendance
-    server.on("/api/attendance",         HTTP_GET, handleGetAttendance);
+    // Attendance – session must come before the parent path for the same reason.
     server.on("/api/attendance/session", HTTP_GET, handleGetSessionAttendance);
+    server.on("/api/attendance",         HTTP_GET, handleGetAttendance);
 
     // Misc
     server.on("/api/stats",     HTTP_GET, handleGetStats);

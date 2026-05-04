@@ -99,7 +99,7 @@ static void configureScan(NimBLEScan* scan) {
     scan->setMaxResults(0);
 }
 
-static void onScanComplete(const NimBLEScanResults& results) {
+static void onScanComplete(NimBLEScanResults results) {
     (void)results;
     NimBLEScan* scan = getScan();
     if (!scan) return;

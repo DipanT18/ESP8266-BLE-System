@@ -320,6 +320,10 @@ The recommended method for phone-based detection:
 | Wrong timestamps | Check WiFi + NTP; verify `NTP_TIMEZONE_OFFSET_S` |
 | LittleFS mount failed | Re-run `pio run --target uploadfs` after full flash erase |
 | BLE scan FAILED | Restart ESP32; ensure no conflicting BLE task |
+| `Permission denied: /dev/ttyUSB0` (Linux) | Add your user to the `dialout` group, then log out and back in: `sudo usermod -aG dialout $USER` |
+| Still permission denied after group change | Install PlatformIO udev rules: `curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/master/scripts/99-platformio-udev.rules &#124; sudo tee /etc/udev/rules.d/99-platformio-udev.rules && sudo udevadm control --reload-rules && sudo udevadm trigger`, then unplug/replug the board |
+| Dashboard shows old UI after firmware update | Always upload the filesystem **after** the firmware: `pio run -t upload && pio run -t uploadfs`. Uploading firmware alone does not update LittleFS |
+| `POST /api/students` returns `400 Invalid JSON` | Ensure you send `Content-Type: application/json` and a valid JSON body with `name` plus at least one of `device_id` (MAC `AA:BB:CC:DD:EE:FF`) or `beacon_id`. The dashboard and firmware auth token must also match (`AUTH_TOKEN` in `config.h` and `index.html`) |
 
 ---
 
