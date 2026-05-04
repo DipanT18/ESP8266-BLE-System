@@ -139,12 +139,11 @@ void stopScan() {
     NimBLEDevice::getScan()->stop();
     NimBLEDevice::getScan()->clearResults();
     s_scanning = false;
-    s_stopRequested = false;
     Serial.println("[BLE] Scan stopped");
 }
 
 bool isScanning() {
-    return s_scanning && !s_stopRequested && NimBLEDevice::getScan()->isScanning();
+    return s_scanning && !s_stopRequested;
 }
 
 } // namespace BLEScanner
