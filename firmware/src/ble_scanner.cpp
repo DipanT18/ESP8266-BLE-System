@@ -98,7 +98,7 @@ static void onScanComplete(NimBLEScanResults results) {
     bool ok = scan->start(BLE_SCAN_DURATION_S, onScanComplete, /*restart=*/false);
     if (!ok) {
         s_scanning = false;
-        Serial.println("[BLE] Scan restart FAILED");
+        Serial.println("[BLE] Scan auto-restart FAILED");
     }
 }
 
