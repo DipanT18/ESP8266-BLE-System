@@ -280,14 +280,16 @@ void registerRoutes(AsyncWebServer& server) {
     });
 
     // Session
+
     server.on("/api/session",       HTTP_GET,  handleGetSession);
-    server.on("/api/session/start", HTTP_POST, handleStartSession, onBody);
-    server.on("/api/session/stop",  HTTP_POST, handleStopSession,  onBody);
+    server.on("/api/session/start", HTTP_POST, handleStartSession, nullptr, onBody);
+server.on("/api/session/stop",  HTTP_POST, handleStopSession,  nullptr, onBody);
+
 
     // Students
-    server.on("/api/students",        HTTP_GET,    handleGetStudents);
-    server.on("/api/students",        HTTP_POST,   handleRegisterStudent, onBody);
-    server.on("/api/students/import", HTTP_POST,   handleImportStudents,  onBody);
+    server.on("/api/students", HTTP_POST, handleRegisterStudent, nullptr, onBody);
+    server.on("/api/students",        HTTP_GET, nullptr,   handleGetStudents);
+    server.on("/api/students/import", HTTP_POST, handleImportStudents, nullptr, onBody);
     server.on("^/api/students/([0-9]+)$", HTTP_DELETE,
               [](AsyncWebServerRequest* req) {
                   if (!checkAuth(req)) { replyError(req, 401, "Unauthorized"); return; }
