@@ -264,11 +264,20 @@ static void handleImportStudents(AsyncWebServerRequest* req) {
 // Route registration
 // ---------------------------------------------------------------------------
 
+static void registerBodyRoute(AsyncWebServer& server, const char* uri,
+                              WebRequestMethodComposite method,
+                              ArRequestHandlerFunction handler) {
+    AsyncCallbackWebHandler* h = new AsyncCallbackWebHandler();
+    h->setUri(uri);
+    h->setMethod(method);
+    h->onRequest(handler);
+    h->onBody(onBody);
+    server.addHandler(h);
+}
+
 void registerRoutes(AsyncWebServer& server) {
-    // NOTE: server.onRequestBody() sets the body handler on the internal
-    // catch-all handler whose canHandle() returns false when _onRequest is
-    // null, so it never fires in ESPAsyncWebServer 1.2.x.  We therefore pass
-    // onBody as the fourth argument directly to each POST route that needs it.
+    // ESPAsyncWebServer 1.2.x lacks a server.on overload with a body callback,
+    // so we register POST routes with AsyncCallbackWebHandler to attach onBody.
 
     // CORS
     DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin",  "*");
@@ -282,14 +291,13 @@ void registerRoutes(AsyncWebServer& server) {
     // Session
 
     server.on("/api/session",       HTTP_GET,  handleGetSession);
-    server.on("/api/session/start", HTTP_POST, handleStartSession, nullptr, onBody);
-server.on("/api/session/stop",  HTTP_POST, handleStopSession,  nullptr, onBody);
-
+    registerBodyRoute(server, "/api/session/start", HTTP_POST, handleStartSession);
+    registerBodyRoute(server, "/api/session/stop",  HTTP_POST, handleStopSession);
 
     // Students
-    server.on("/api/students", HTTP_POST, handleRegisterStudent, nullptr, onBody);
-    server.on("/api/students",        HTTP_GET, nullptr,   handleGetStudents);
-    server.on("/api/students/import", HTTP_POST, handleImportStudents, nullptr, onBody);
+    registerBodyRoute(server, "/api/students",        HTTP_POST, handleRegisterStudent);
+    server.on("/api/students",        HTTP_GET,  handleGetStudents);
+    registerBodyRoute(server, "/api/students/import", HTTP_POST, handleImportStudents);
     server.on("^/api/students/([0-9]+)$", HTTP_DELETE,
               [](AsyncWebServerRequest* req) {
                   if (!checkAuth(req)) { replyError(req, 401, "Unauthorized"); return; }
